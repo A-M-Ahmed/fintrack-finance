@@ -58,3 +58,42 @@ exports.addTransaction = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+// @desc    Get transactions
+// @route   GET /api/transactions
+// @access  Private
+exports.getTransactions = async (req, res) => {
+    try {
+        const { walletId, type, search, sort } = req.query;
+
+        let query = { user: req.user.id };
+
+        if (walletId) {
+            query.wallet = walletId;
+        }
+
+        if (type) {
+            query.type = type;
+        }
+
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { category: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        // Default sort by date desc
+        let sortStr = '-date';
+        if (sort) {
+            sortStr = sort;
+        }
+
+        const transactions = await Transaction.find(query).sort(sortStr).populate('wallet', 'name type');
+
+        res.status(200).json(transactions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
