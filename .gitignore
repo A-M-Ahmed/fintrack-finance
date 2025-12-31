@@ -3,4 +3,7 @@ node_modules
 dist
 build
 .DS_Store
-FINAL_FIXES.md
+
+# Hide all .md files except README.md
+*.md
+!README.md

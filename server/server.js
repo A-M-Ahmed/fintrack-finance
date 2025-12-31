@@ -49,8 +49,8 @@ if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/dist')));
 
     // Handle client-side routing - send index.html for any non-API routes
-    // Express 5 requires named wildcard: {*path} instead of *
-    app.get('/{*path}', (req, res) => {
+    // Using regex pattern for Express 5 compatibility
+    app.get(/.*/, (req, res) => {
         res.sendFile(path.join(__dirname, '../client/dist/index.html'));
     });
 } else {
