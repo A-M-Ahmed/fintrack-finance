@@ -166,7 +166,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 👨‍💻 Author
 
-**Ahmed Mohamed**
+**Abdirahman Ahmed**
 - GitHub: [@A-M-Ahmed](https://github.com/A-M-Ahmed)
 
 ---
