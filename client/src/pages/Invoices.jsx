@@ -7,14 +7,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, FileText } from "lucide-react";
+import { PlusCircle, FileText, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
+  const [wallets, setWallets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
+  
+  // Payment Dialog State
+  const [paymentDialog, setPaymentDialog] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [paymentData, setPaymentData] = useState({ walletId: '', type: 'income' });
+
   const [formData, setFormData] = useState({
     invoiceId: '',
     clientName: '',
@@ -22,19 +30,26 @@ export default function Invoices() {
     dueDate: ''
   });
 
-  const fetchInvoices = async () => {
+  const fetchData = async () => {
     try {
-      const res = await api.get('/invoices');
-      setInvoices(res.data);
+      const [invRes, walletRes] = await Promise.all([
+         api.get('/invoices'),
+         api.get('/wallets')
+      ]);
+      setInvoices(invRes.data);
+      setWallets(walletRes.data);
+      if (walletRes.data.length > 0) {
+          setPaymentData(prev => ({ ...prev, walletId: walletRes.data[0]._id }));
+      }
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching invoices", error);
+      console.error("Error fetching data", error);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchInvoices();
+    fetchData();
   }, []);
 
   const handleCreate = async () => {
@@ -43,10 +58,31 @@ export default function Invoices() {
       toast.success("Invoice created!");
       setIsOpen(false);
       setFormData({ invoiceId: '', clientName: '', items: [{ name: '', qty: 1, price: 0 }], dueDate: '' });
-      fetchInvoices();
+      fetchData();
     } catch (error) {
       toast.error("Failed to create invoice");
     }
+  };
+
+  const handleMarkPaid = async () => {
+      if (!selectedInvoice) return;
+      try {
+          await api.put(`/invoices/${selectedInvoice._id}/status`, {
+              status: 'paid',
+              walletId: paymentData.walletId,
+              type: paymentData.type
+          });
+          toast.success("Invoice marked as paid & Transaction recorded!");
+          setPaymentDialog(false);
+          fetchData();
+      } catch (error) {
+          toast.error(error.response?.data?.message || "Failed to update invoice");
+      }
+  };
+
+  const openPaymentDialog = (invoice) => {
+      setSelectedInvoice(invoice);
+      setPaymentDialog(true);
   };
 
   const addItem = () => {
@@ -84,22 +120,22 @@ export default function Invoices() {
             <DialogHeader>
               <DialogTitle>Create New Invoice</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
+            <div className="grid gap-6 py-4 max-h-[60vh] overflow-y-auto form-grid">
               <div className="grid grid-cols-2 gap-4">
-                <div>
+                <div className="space-y-2">
                   <Label>Invoice ID</Label>
                   <Input value={formData.invoiceId} onChange={(e) => setFormData({ ...formData, invoiceId: e.target.value })} placeholder="e.g., INV-001" />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Client Name</Label>
                   <Input value={formData.clientName} onChange={(e) => setFormData({ ...formData, clientName: e.target.value })} placeholder="Client Name" />
                 </div>
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label>Due Date</Label>
                 <Input type="date" value={formData.dueDate} onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })} />
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label>Items</Label>
                 {formData.items.map((item, index) => (
                   <div key={index} className="grid grid-cols-3 gap-2 mt-2">
@@ -138,6 +174,7 @@ export default function Invoices() {
                   <TableHead>Due Date</TableHead>
                   <TableHead>Total</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -149,6 +186,18 @@ export default function Invoices() {
                     <TableCell>{format(new Date(inv.dueDate), 'MMM dd, yyyy')}</TableCell>
                     <TableCell>${inv.total?.toFixed(2)}</TableCell>
                     <TableCell>{getStatusBadge(inv.status)}</TableCell>
+                    <TableCell className="text-right">
+                        {inv.status !== 'paid' && (
+                            <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="h-8 gap-1"
+                                onClick={() => openPaymentDialog(inv)}
+                            >
+                                <CheckCircle className="h-3 w-3" /> Mark Paid
+                            </Button>
+                        )}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -156,6 +205,43 @@ export default function Invoices() {
           </CardContent>
         </Card>
       )}
+
+      {/* Payment Dialog */}
+      <Dialog open={paymentDialog} onOpenChange={setPaymentDialog}>
+          <DialogContent>
+              <DialogHeader>
+                  <DialogTitle>Record Payment</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-6 py-4">
+                  <div className="space-y-2">
+                       <Label>Select Wallet for Payment</Label>
+                       <Select value={paymentData.walletId} onValueChange={(v) => setPaymentData({...paymentData, walletId: v})}>
+                           <SelectTrigger><SelectValue placeholder="Select Wallet" /></SelectTrigger>
+                           <SelectContent>
+                               {wallets.map(w => <SelectItem key={w._id} value={w._id}>{w.name} (${w.currentBalance})</SelectItem>)}
+                           </SelectContent>
+                       </Select>
+                  </div>
+                  <div className="space-y-2">
+                       <Label>Payment Type</Label>
+                       <Select value={paymentData.type} onValueChange={(v) => setPaymentData({...paymentData, type: v})}>
+                           <SelectTrigger><SelectValue /></SelectTrigger>
+                           <SelectContent>
+                               <SelectItem value="income">Income (Received)</SelectItem>
+                               <SelectItem value="expense">Expense (Paid)</SelectItem>
+                           </SelectContent>
+                       </Select>
+                  </div>
+                  <div className="bg-muted p-4 rounded-md">
+                      <p className="text-sm">Total Amount: <span className="font-bold">${selectedInvoice?.total?.toFixed(2)}</span></p>
+                  </div>
+              </div>
+              <DialogFooter>
+                  <Button variant="outline" onClick={() => setPaymentDialog(false)}>Cancel</Button>
+                  <Button onClick={handleMarkPaid}>Confirm Payment</Button>
+              </DialogFooter>
+          </DialogContent>
+      </Dialog>
     </div>
   );
 }

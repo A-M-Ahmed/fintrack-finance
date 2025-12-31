@@ -10,4 +10,6 @@ router.route('/')
 router.route('/:id')
     .get(protect, getInvoice);
 
+router.put('/:id/status', protect, require('../controllers/invoiceController').updateInvoiceStatus);
+
 module.exports = router;

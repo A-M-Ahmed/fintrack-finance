@@ -64,7 +64,7 @@ exports.loginUser = async (req, res) => {
                 token: generateToken(user._id),
             });
         } else {
-            res.status(400).json({ message: 'Invalid credentials' });
+            res.status(400).json({ message: 'Invalid email or password' });
         }
     } catch (error) {
         console.error(error);
