@@ -84,3 +84,39 @@ exports.getMe = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+// @desc    Change password
+// @route   POST /api/auth/change-password
+// @access  Private
+exports.changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const user = await User.findById(req.user.id);
+
+        // Security Check: 3 Days Cooldown
+        const lastChange = user.lastPasswordChange || user.createdAt;
+        const threeDays = 3 * 24 * 60 * 60 * 1000;
+        const timeDiff = Date.now() - new Date(lastChange).getTime();
+
+        if (timeDiff < threeDays) {
+            const daysLeft = Math.ceil((threeDays - timeDiff) / (24 * 60 * 60 * 1000));
+            return res.status(403).json({ message: `Security: You can change your password again in ${daysLeft} days.` });
+        }
+
+        // Verify current password
+        if (!(await bcrypt.compare(currentPassword, user.passwordHash))) {
+            return res.status(400).json({ message: 'Invalid current password' });
+        }
+
+        // Update password
+        const salt = await bcrypt.genSalt(10);
+        user.passwordHash = await bcrypt.hash(newPassword, salt);
+        user.lastPasswordChange = Date.now();
+        await user.save();
+
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
