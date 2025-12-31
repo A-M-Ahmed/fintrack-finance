@@ -136,21 +136,21 @@ export default function Invoices() {
                   <Label>Invoice ID</Label>
                   <Input value={formData.invoiceId} disabled className="bg-muted font-mono" />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3 flex flex-col pr-1">
                   <Label>Client Name</Label>
                   <Input value={formData.clientName} onChange={(e) => setFormData({ ...formData, clientName: e.target.value })} placeholder="Client Name" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div className="space-y-3  flex flex-col pl-1">
                   <Label>Due Date</Label>
                   <Input type="date" value={formData.dueDate} onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })} />
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 px-1">
                 <Label>Items</Label>
                 {formData.items.map((item, index) => (
-                  <div key={index} className="grid grid-cols-3 gap-2 mt-2">
+                  <div key={index} className="grid grid-cols-3 gap-2 md:space-y-1 mt-2">
                     <Input placeholder="Item name" value={item.name} onChange={(e) => updateItem(index, 'name', e.target.value)} />
                     <Input type="number" placeholder="Qty" value={item.qty} onChange={(e) => updateItem(index, 'qty', e.target.value)} />
                     <Input type="number" placeholder="Price" value={item.price} onChange={(e) => updateItem(index, 'price', e.target.value)} />

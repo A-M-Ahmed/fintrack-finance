@@ -139,8 +139,8 @@ export default function Dashboard() {
                   <Tooltip 
                      contentStyle={{ borderRadius: '0.5rem', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
                   />
-                  <Area type="monotone" dataKey="income" stroke="#84cc16" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" />
-                  <Area type="monotone" dataKey="expense" stroke="#facc15" strokeWidth={3} fillOpacity={1} fill="url(#colorExpense)" />
+                  <Area type="monotone" dataKey="income" stroke="#84cc16" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                  <Area type="monotone" dataKey="expense" stroke="#facc15" strokeWidth={3} fillOpacity={1} fill="url(#colorExpense)" dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
