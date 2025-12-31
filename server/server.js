@@ -26,8 +26,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI)
+// Database Connection - Use MONGO_URI_PRO for production, fallback to MONGO_URI
+const mongoUri = process.env.MONGO_URI_PRO || process.env.MONGO_URI;
+mongoose.connect(mongoUri)
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.error('MongoDB Connection Error:', err));
 
