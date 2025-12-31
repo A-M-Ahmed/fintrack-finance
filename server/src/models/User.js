@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema({
     lastPasswordChange: {
         type: Date,
         default: null
+    },
+    avatar: {
+        type: String,
+        default: null
     }
 });
 

@@ -135,12 +135,18 @@ exports.updateDetails = async (req, res) => {
             user.name = name || user.name;
             user.email = email || user.email;
 
+            if (req.file) {
+                // If using local storage:
+                user.avatar = '/uploads/' + req.file.filename;
+            }
+
             const updatedUser = await user.save();
 
             res.status(200).json({
                 _id: updatedUser._id,
                 name: updatedUser.name,
                 email: updatedUser.email,
+                avatar: updatedUser.avatar,
                 token: generateToken(updatedUser._id),
             });
         } else {

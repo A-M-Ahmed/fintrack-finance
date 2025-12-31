@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import useAuthStore from "@/store/useAuthStore";
 import api from "@/lib/axios";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,15 +8,18 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Camera, Upload } from "lucide-react";
 
 export default function Settings() {
   const { user, updateUser } = useAuthStore();
+  const fileInputRef = useRef(null);
   
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     email: user?.email || ''
   });
+
+  const [file, setFile] = useState(null);
 
   const [passData, setPassData] = useState({
     currentPassword: '',
@@ -27,12 +30,38 @@ export default function Settings() {
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPass, setLoadingPass] = useState(false);
 
+  const handleFileChange = (e) => {
+      const selected = e.target.files[0];
+      if (selected) {
+          if (!selected.type.startsWith('image/')) {
+              toast.error("Please select an image file");
+              return;
+          }
+          if (selected.size > 5 * 1024 * 1024) {
+              toast.error("Image size too large (max 5MB)");
+              return;
+          }
+          setFile(selected);
+      }
+  };
+
   const handleUpdateProfile = async () => {
     setLoadingProfile(true);
     try {
-      const res = await api.put('/auth/updatedetails', profileData);
+      const formData = new FormData();
+      formData.append('name', profileData.name);
+      formData.append('email', profileData.email);
+      if (file) {
+          formData.append('avatar', file);
+      }
+
+      const res = await api.put('/auth/updatedetails', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
       updateUser(res.data);
       toast.success("Profile updated successfully");
+      setFile(null); // Reset file input
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update profile");
     } finally {
@@ -66,6 +95,15 @@ export default function Settings() {
     }
   };
 
+  // Helper to resolve avatar URL
+  const getAvatarUrl = () => {
+      if (file) return URL.createObjectURL(file);
+      if (user?.avatar) {
+          return user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000${user.avatar}`;
+      }
+      return `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`;
+  };
+
   return (
     <div className="flex flex-col gap-8 max-w-2xl px-1">
       <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
@@ -77,17 +115,37 @@ export default function Settings() {
           <CardDescription>Manage your profile information</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} />
-              <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-medium text-lg">{user?.name}</p>
+          <div className="flex items-center gap-6">
+            <div 
+                className="relative group cursor-pointer"
+                onClick={() => fileInputRef.current.click()}
+            >
+                <Avatar className="h-24 w-24 border-2 border-muted">
+                    <AvatarImage src={getAvatarUrl()} className="object-cover" />
+                    <AvatarFallback className="text-2xl">{user?.name?.[0]}</AvatarFallback>
+                </Avatar>
+                <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="text-white h-8 w-8" />
+                </div>
+                <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileChange} 
+                    className="hidden" 
+                    accept="image/*" 
+                />
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-medium text-lg">{user?.name}</h3>
               <p className="text-sm text-muted-foreground">{user?.email}</p>
+              <Button variant="outline" size="sm" className="h-8 gap-2 mt-2" onClick={() => fileInputRef.current.click()}>
+                  <Upload className="h-3 w-3" /> Change Picture
+              </Button>
             </div>
           </div>
+          
           <Separator />
+          
           <div className="grid gap-6">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>

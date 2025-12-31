@@ -84,7 +84,7 @@ export default function Layout() {
       <div className="p-4 border-t">
         <div className="flex items-center gap-3 mb-4 px-2">
           <Avatar>
-            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} />
+            <AvatarImage src={user?.avatar ? (user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000${user.avatar}`) : `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} />
             <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1 overflow-hidden">
