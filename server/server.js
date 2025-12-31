@@ -8,19 +8,19 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Import routes
-import authRoutes from './routes/auth.routes.js';
-import walletRoutes from './routes/wallet.routes.js';
-import transactionRoutes from './routes/transaction.routes.js';
-import dashboardRoutes from './routes/dashboard.routes.js';
-import invoiceRoutes from './routes/invoice.routes.js';
+import authRoutes from './routes/authRoutes.js';
+import walletRoutes from './routes/walletRoutes.js';
+import transactionRoutes from './routes/transactionRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import invoiceRoutes from './routes/invoiceRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-dotenv.config()
 // Middleware
 app.use(helmet({
     contentSecurityPolicy: false,
@@ -52,14 +52,11 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/invoices', invoiceRoutes);
 
 // Serve frontend in production
-if (process.env.NODE_ENV === 'production') { 
-
-    const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
+if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/dist')));
 
     app.get(/.*/, (req, res) => {
-        res.sendFile(path.join(__dirname, '..','client','dist','index.html'));
+        res.sendFile(path.join(__dirname, '../client/dist/index.html'));
     });
 }
 
