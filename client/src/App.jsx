@@ -35,7 +35,7 @@ export default function App() {
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
-      <Toaster />
+      <Toaster position="top-center" richColors />
     </BrowserRouter>
   );
 }
