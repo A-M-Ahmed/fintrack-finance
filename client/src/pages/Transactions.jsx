@@ -24,7 +24,7 @@ export default function Transactions() {
     type: 'expense',
     category: '',
     title: '',
-    amount: 0,
+    amount: '',
     note: ''
   });
 
@@ -52,10 +52,10 @@ export default function Transactions() {
 
   const handleCreate = async () => {
     try {
-      await api.post('/transactions', formData);
+      await api.post('/transactions', { ...formData, amount: Number(formData.amount) });
       toast.success("Transaction added!");
       setIsOpen(false);
-      setFormData({ walletId: wallets[0]?._id || '', type: 'expense', category: '', title: '', amount: 0, note: '' });
+      setFormData({ walletId: wallets[0]?._id || '', type: 'expense', category: '', title: '', amount: '', note: '' });
       fetchData();
     } catch (error) {
       toast.error("Failed to add transaction");
@@ -95,8 +95,8 @@ export default function Transactions() {
             <DialogHeader>
               <DialogTitle>Add New Transaction</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div>
+            <div className="grid gap-6 py-4">
+              <div className="space-y-2">
                 <Label>Wallet</Label>
                 <Select value={formData.walletId} onValueChange={(v) => setFormData({ ...formData, walletId: v })}>
                   <SelectTrigger><SelectValue placeholder="Select wallet" /></SelectTrigger>
@@ -105,7 +105,7 @@ export default function Transactions() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label>Type</Label>
                 <Select value={formData.type} onValueChange={(v) => setFormData({ ...formData, type: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
@@ -115,19 +115,26 @@ export default function Transactions() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label>Category</Label>
                 <Input value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} placeholder="e.g., Food, Rent" />
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label>Title</Label>
                 <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="e.g., Netflix Subscription" />
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label>Amount</Label>
-                <Input type="number" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })} />
+                <Input 
+                   type="text" 
+                   value={formData.amount} 
+                   onChange={(e) => {
+                      const val = e.target.value;
+                      if (/^\d*$/.test(val)) setFormData({ ...formData, amount: val });
+                   }} 
+                />
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label>Note (Optional)</Label>
                 <Input value={formData.note} onChange={(e) => setFormData({ ...formData, note: e.target.value })} />
               </div>

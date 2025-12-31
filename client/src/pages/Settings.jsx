@@ -11,14 +11,34 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 export default function Settings() {
-  const { user } = useAuthStore();
+  const { user, updateUser } = useAuthStore();
   
+  const [profileData, setProfileData] = useState({
+    name: user?.name || '',
+    email: user?.email || ''
+  });
+
   const [passData, setPassData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
-  const [loading, setLoading] = useState(false);
+  
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [loadingPass, setLoadingPass] = useState(false);
+
+  const handleUpdateProfile = async () => {
+    setLoadingProfile(true);
+    try {
+      const res = await api.put('/auth/updatedetails', profileData);
+      updateUser(res.data);
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update profile");
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
 
   const handleChangePassword = async () => {
     if (passData.newPassword !== passData.confirmPassword) {
@@ -30,7 +50,7 @@ export default function Settings() {
       return;
     }
 
-    setLoading(true);
+    setLoadingPass(true);
     try {
       await api.post('/auth/change-password', {
         currentPassword: passData.currentPassword,
@@ -42,12 +62,12 @@ export default function Settings() {
       const msg = error.response?.data?.message || "Failed to update password";
       toast.error(msg);
     } finally {
-      setLoading(false);
+      setLoadingPass(false);
     }
   };
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-8 max-w-2xl px-1">
       <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
 
       {/* Profile Section */}
@@ -71,14 +91,25 @@ export default function Settings() {
           <div className="grid gap-6">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" value={user?.name || ''} disabled className="bg-muted" />
-              <p className="text-[0.8rem] text-muted-foreground">Name cannot be changed.</p>
+              <Input 
+                id="name" 
+                value={profileData.name} 
+                onChange={(e) => setProfileData({...profileData, name: e.target.value})} 
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={user?.email || ''} disabled className="bg-muted" />
-              <p className="text-[0.8rem] text-muted-foreground">Email cannot be changed.</p>
+              <Input 
+                id="email" 
+                type="email" 
+                value={profileData.email} 
+                onChange={(e) => setProfileData({...profileData, email: e.target.value})} 
+              />
             </div>
+            <Button onClick={handleUpdateProfile} disabled={loadingProfile}>
+               {loadingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+               Save Changes
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -87,7 +118,7 @@ export default function Settings() {
       <Card>
         <CardHeader>
           <CardTitle>Security</CardTitle>
-          <CardDescription>Change your password (available every 3 days)</CardDescription>
+          <CardDescription>Change your password (3 days cooldown)</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
@@ -117,8 +148,8 @@ export default function Settings() {
               onChange={(e) => setPassData({...passData, confirmPassword: e.target.value})}
             />
           </div>
-          <Button onClick={handleChangePassword} disabled={loading}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button onClick={handleChangePassword} disabled={loadingPass} variant="secondary">
+            {loadingPass && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Change Password
           </Button>
         </CardContent>

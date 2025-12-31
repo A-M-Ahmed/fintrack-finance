@@ -27,7 +27,7 @@ const UserSchema = new mongoose.Schema({
     },
     lastPasswordChange: {
         type: Date,
-        default: Date.now
+        default: null
     }
 });
 

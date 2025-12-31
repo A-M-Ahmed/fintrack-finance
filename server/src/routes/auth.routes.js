@@ -7,5 +7,6 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.get('/me', protect, getMe);
 router.post('/change-password', protect, require('../controllers/authController').changePassword);
+router.put('/updatedetails', protect, require('../controllers/authController').updateDetails);
 
 module.exports = router;

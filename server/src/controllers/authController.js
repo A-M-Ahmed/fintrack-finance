@@ -94,13 +94,15 @@ exports.changePassword = async (req, res) => {
         const user = await User.findById(req.user.id);
 
         // Security Check: 3 Days Cooldown
-        const lastChange = user.lastPasswordChange || user.createdAt;
-        const threeDays = 3 * 24 * 60 * 60 * 1000;
-        const timeDiff = Date.now() - new Date(lastChange).getTime();
+        // Only check if lastPasswordChange is set (not null)
+        if (user.lastPasswordChange) {
+            const threeDays = 3 * 24 * 60 * 60 * 1000;
+            const timeDiff = Date.now() - new Date(user.lastPasswordChange).getTime();
 
-        if (timeDiff < threeDays) {
-            const daysLeft = Math.ceil((threeDays - timeDiff) / (24 * 60 * 60 * 1000));
-            return res.status(403).json({ message: `Security: You can change your password again in ${daysLeft} days.` });
+            if (timeDiff < threeDays) {
+                const daysLeft = Math.ceil((threeDays - timeDiff) / (24 * 60 * 60 * 1000));
+                return res.status(403).json({ message: `Security: You can change your password again in ${daysLeft} days.` });
+            }
         }
 
         // Verify current password
@@ -115,6 +117,35 @@ exports.changePassword = async (req, res) => {
         await user.save();
 
         res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Update user details
+// @route   PUT /api/auth/updatedetails
+// @access  Private
+exports.updateDetails = async (req, res) => {
+    try {
+        const { name, email } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (user) {
+            user.name = name || user.name;
+            user.email = email || user.email;
+
+            const updatedUser = await user.save();
+
+            res.status(200).json({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                token: generateToken(updatedUser._id),
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });

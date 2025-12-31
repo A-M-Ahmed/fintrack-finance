@@ -98,7 +98,7 @@ export default function CreditCard({ name, balance, number, type = "universal", 
         <DialogContent className="sm:max-w-xs">
           <DialogHeader>
             <DialogTitle>View Balance</DialogTitle>
-            <DialogDescription>Enter your security PIN to view balance.</DialogDescription>
+            <DialogDescription>Enter your security PIN to view balance. (Default: 1234)</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
              <div className="space-y-2">

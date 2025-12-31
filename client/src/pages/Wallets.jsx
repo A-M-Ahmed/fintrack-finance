@@ -13,7 +13,7 @@ export default function Wallets() {
   const [wallets, setWallets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', type: 'bank', initialBalance: 0 });
+  const [formData, setFormData] = useState({ name: '', type: 'bank', initialBalance: '' });
 
   const fetchWallets = async () => {
     try {
@@ -32,10 +32,11 @@ export default function Wallets() {
 
   const handleCreate = async () => {
     try {
-      await api.post('/wallets', formData);
+      if (!formData.initialBalance) formData.initialBalance = "0";
+      await api.post('/wallets', { ...formData, initialBalance: Number(formData.initialBalance) });
       toast.success("Wallet created!");
       setIsOpen(false);
-      setFormData({ name: '', type: 'bank', initialBalance: 0 });
+      setFormData({ name: '', type: 'bank', initialBalance: '' });
       fetchWallets();
     } catch (error) {
       toast.error("Failed to create wallet");
@@ -67,8 +68,8 @@ export default function Wallets() {
             <DialogHeader>
               <DialogTitle>Create New Wallet</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div>
+            <div className="grid gap-6 py-4">
+              <div className="space-y-2">
                 <Label htmlFor="name">Wallet Name</Label>
                 <Input 
                   id="name" 
@@ -77,7 +78,7 @@ export default function Wallets() {
                   placeholder="e.g., Universal Bank"
                 />
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label>Wallet Type</Label>
                 <Select 
                   value={formData.type} 
@@ -93,13 +94,17 @@ export default function Wallets() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="balance">Initial Balance</Label>
                 <Input 
                   id="balance" 
-                  type="number" 
+                  type="text" 
                   value={formData.initialBalance} 
-                  onChange={(e) => setFormData({ ...formData, initialBalance: Number(e.target.value) })} 
+                  onChange={(e) => {
+                      const val = e.target.value;
+                      if (/^\d*$/.test(val)) setFormData({ ...formData, initialBalance: val });
+                  }}
+                  placeholder="0"
                 />
               </div>
             </div>
