@@ -10,6 +10,8 @@ import Layout from "@/layouts/Layout";
 import useAuthStore from "@/store/useAuthStore";
 import { useEffect } from "react";
 
+import { Toaster } from "@/components/ui/sonner";
+
 export default function App() {
   const initAuth = useAuthStore((state) => state.init);
 
@@ -33,6 +35,7 @@ export default function App() {
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
+      <Toaster />
     </BrowserRouter>
   );
 }
