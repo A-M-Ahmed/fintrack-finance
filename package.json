@@ -7,7 +7,7 @@
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "start": "cd server && npm start",
-    "build": "npm install --prefix ./client && npm run build --prefix ./client",
+    "build": "npm install --prefix ./client --production=false && npm run build --prefix ./client",
     "install-all": "npm install && cd server && npm install && cd ../client && npm install"
   },
   "keywords": [],
