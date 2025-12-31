@@ -12,11 +12,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Import routes
-import authRoutes from './src/routes/auth.routes.js';
-import walletRoutes from './src/routes/wallet.routes.js';
-import transactionRoutes from './src/routes/transaction.routes.js';
-import dashboardRoutes from './src/routes/dashboard.routes.js';
-import invoiceRoutes from './src/routes/invoice.routes.js';
+import authRoutes from './routes/auth.routes.js';
+import walletRoutes from './routes/wallet.routes.js';
+import transactionRoutes from './routes/transaction.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
+import invoiceRoutes from './routes/invoice.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
