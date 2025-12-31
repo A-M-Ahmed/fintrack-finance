@@ -97,3 +97,46 @@ exports.getTransactions = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+// @desc    Delete transaction
+// @route   DELETE /api/transactions/:id
+// @access  Private
+exports.deleteTransaction = async (req, res) => {
+    try {
+        const transaction = await Transaction.findById(req.params.id);
+
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+
+        if (transaction.user.toString() !== req.user.id) {
+            return res.status(401).json({ message: 'Not authorized' });
+        }
+
+        const wallet = await Wallet.findById(transaction.wallet);
+
+        // Reverse balance
+        if (wallet) {
+            let balanceChange = 0;
+            // If we are deleting an INCOME, we MUST SUBTRACT it to revert
+            if (transaction.type === 'income') {
+                balanceChange = -Number(transaction.amount);
+            }
+            // If we are deleting an EXPENSE, we MUST ADD it back
+            else if (transaction.type === 'expense' || transaction.type === 'transfer') {
+                balanceChange = Number(transaction.amount);
+            }
+
+            wallet.currentBalance += balanceChange;
+            await wallet.save();
+        }
+
+        await transaction.deleteOne();
+
+        res.status(200).json({ id: req.params.id });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+```
