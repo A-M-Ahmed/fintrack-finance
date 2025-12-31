@@ -2,15 +2,13 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
+import Wallets from "@/pages/Wallets";
+import Transactions from "@/pages/Transactions";
+import Invoices from "@/pages/Invoices";
+import Settings from "@/pages/Settings";
 import Layout from "@/layouts/Layout";
 import useAuthStore from "@/store/useAuthStore";
 import { useEffect } from "react";
-
-// Placeholder pages for routes not yet implemented
-const Wallets = () => <div>Wallets Page (Coming Soon)</div>;
-const Transactions = () => <div>Transactions Page (Coming Soon)</div>;
-const Invoices = () => <div>Invoices Page (Coming Soon)</div>;
-const Settings = () => <div>Settings Page (Coming Soon)</div>;
 
 export default function App() {
   const initAuth = useAuthStore((state) => state.init);
