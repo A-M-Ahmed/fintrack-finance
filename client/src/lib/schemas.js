@@ -16,7 +16,7 @@ export const registerSchema = z.object({
 export const walletSchema = z.object({
     name: z.string().min(1, 'Wallet name is required'),
     type: z.enum(['bank', 'cash', 'mobile']),
-    initialBalance: z.number().min(0, 'Balance cannot be negative'),
+    initialBalance: z.coerce.number({ invalid_type_error: "Enter numbers only" }).min(0, 'Balance cannot be negative'),
 });
 
 // Transaction Schema
@@ -25,7 +25,7 @@ export const transactionSchema = z.object({
     type: z.enum(['income', 'expense', 'transfer']),
     category: z.string().min(1, 'Category is required'),
     title: z.string().min(1, 'Title is required'),
-    amount: z.number().positive('Amount must be positive'),
+    amount: z.coerce.number({ invalid_type_error: "Enter numbers only" }).positive('Amount must be positive'),
     note: z.string().optional(),
 });
 
