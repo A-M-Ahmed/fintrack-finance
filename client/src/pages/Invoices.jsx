@@ -104,13 +104,23 @@ export default function Invoices() {
     }
   };
 
+  const generateInvoiceId = () => {
+      // Generate a unique ID, e.g., INV-TIMESTAMP (last 6 digits)
+      return `INV-${Date.now().toString().slice(-6)}`;
+  };
+
   if (loading) return <div>Loading invoices...</div>;
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold tracking-tight">Invoices</h2>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={isOpen} onOpenChange={(val) => {
+            setIsOpen(val);
+            if (val) {
+                setFormData(prev => ({ ...prev, invoiceId: generateInvoiceId() }));
+            }
+        }}>
           <DialogTrigger asChild>
             <Button className="gap-2">
               <PlusCircle className="h-4 w-4" /> Create Invoice
@@ -124,7 +134,7 @@ export default function Invoices() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Invoice ID</Label>
-                  <Input value={formData.invoiceId} onChange={(e) => setFormData({ ...formData, invoiceId: e.target.value })} placeholder="e.g., INV-001" />
+                  <Input value={formData.invoiceId} disabled className="bg-muted font-mono" />
                 </div>
                 <div className="space-y-2">
                   <Label>Client Name</Label>
