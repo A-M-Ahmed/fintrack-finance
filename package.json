@@ -1,0 +1,17 @@
+{
+  "name": "fintrack-root",
+  "version": "1.0.0",
+  "description": "FinTrack Personal Finance System",
+  "scripts": {
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install-all": "npm install && cd server && npm install && cd .. && cd client && npm install && cd .."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
