@@ -27,6 +27,7 @@ app.use('/api/auth', require('./src/routes/auth.routes'));
 app.use('/api/wallets', require('./src/routes/wallet.routes'));
 app.use('/api/transactions', require('./src/routes/transaction.routes'));
 app.use('/api/dashboard', require('./src/routes/dashboard.routes'));
+app.use('/api/invoices', require('./src/routes/invoice.routes'));
 
 app.get('/', (req, res) => {
     res.send('FinTrack API is running...');
