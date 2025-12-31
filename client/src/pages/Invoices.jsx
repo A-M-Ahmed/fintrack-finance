@@ -141,9 +141,11 @@ export default function Invoices() {
                   <Input value={formData.clientName} onChange={(e) => setFormData({ ...formData, clientName: e.target.value })} placeholder="Client Name" />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label>Due Date</Label>
-                <Input type="date" value={formData.dueDate} onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })} />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Due Date</Label>
+                  <Input type="date" value={formData.dueDate} onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })} />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Items</Label>
