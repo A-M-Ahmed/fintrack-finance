@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Outlet, Navigate, useLocation, Link } from "react-router-dom";
 import useAuthStore from "@/store/useAuthStore";
 import useThemeStore from "@/store/useThemeStore";
-import { Toaster } from "@/components/ui/sonner";
 import { 
   LayoutDashboard, 
   Wallet, 
@@ -18,7 +17,17 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Layout() {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
@@ -86,10 +95,28 @@ export default function Layout() {
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
         </div>
-        <Button variant="outline" className="w-full justify-start gap-2" onClick={logout}>
-          <LogOut className="h-4 w-4" />
-          Log Out
-        </Button>
+        
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline" className="w-full justify-start gap-2">
+              <LogOut className="h-4 w-4" />
+              Log Out
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                You will be logged out of your account.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={logout}>Log Out</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
       </div>
     </div>
   );
@@ -118,7 +145,7 @@ export default function Layout() {
         <Outlet />
       </main>
       
-      <Toaster />
+      {/* Toaster removed from here, handled in App.jsx */}
     </div>
   );
 }
