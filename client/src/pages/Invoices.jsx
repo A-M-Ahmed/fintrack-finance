@@ -68,6 +68,7 @@ export default function Invoices() {
   });
 
   const fetchData = async () => {
+    const startTime = Date.now();
     try {
       const [invRes, walletRes] = await Promise.all([
          api.get('/invoices'),
@@ -78,6 +79,8 @@ export default function Invoices() {
       if (walletRes.data.length > 0) {
           setPaymentData(prev => ({ ...prev, walletId: walletRes.data[0]._id }));
       }
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 1000) await new Promise(r => setTimeout(r, 1000 - elapsed));
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data", error);

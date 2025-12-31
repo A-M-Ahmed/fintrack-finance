@@ -41,9 +41,12 @@ export default function Wallets() {
   const [formData, setFormData] = useState({ name: '', type: 'bank', initialBalance: '' });
 
   const fetchWallets = async () => {
+    const startTime = Date.now();
     try {
       const res = await api.get('/wallets');
       setWallets(res.data);
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 1000) await new Promise(r => setTimeout(r, 1000 - elapsed));
       setLoading(false);
     } catch (error) {
       console.error("Error fetching wallets", error);

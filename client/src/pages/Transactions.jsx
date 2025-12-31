@@ -74,6 +74,7 @@ export default function Transactions() {
   });
 
   const fetchData = async () => {
+    const startTime = Date.now();
     try {
       const [transRes, walletRes] = await Promise.all([
         api.get('/transactions'),
@@ -84,6 +85,8 @@ export default function Transactions() {
       if (walletRes.data.length > 0 && !formData.walletId) {
         setFormData(prev => ({ ...prev, walletId: walletRes.data[0]._id }));
       }
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 1000) await new Promise(r => setTimeout(r, 1000 - elapsed));
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data", error);
