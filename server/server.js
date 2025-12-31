@@ -25,6 +25,7 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/fintrack')
 // Routes
 app.use('/api/auth', require('./src/routes/auth.routes'));
 app.use('/api/wallets', require('./src/routes/wallet.routes'));
+app.use('/api/transactions', require('./src/routes/transaction.routes'));
 
 app.get('/', (req, res) => {
     res.send('FinTrack API is running...');
