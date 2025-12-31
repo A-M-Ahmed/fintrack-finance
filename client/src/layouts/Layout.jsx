@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Outlet, Navigate, useLocation, Link } from "react-router-dom";
 import useAuthStore from "@/store/useAuthStore";
+import useThemeStore from "@/store/useThemeStore";
 import { Toaster } from "@/components/ui/sonner";
 import { 
   LayoutDashboard, 
@@ -9,19 +10,28 @@ import {
   Settings, 
   LogOut, 
   Menu,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Moon,
+  Sun
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+
 export default function Layout() {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
+  const { theme, toggleTheme, initTheme } = useThemeStore();
   const location = useLocation();
+
+  useEffect(() => {
+    initTheme();
+  }, [initTheme]);
 
   if (isLoading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
   if (!isAuthenticated) return <Navigate to="/signin" />;
+
 
   const NavLink = ({ to, icon: Icon, children }) => {
     const isActive = location.pathname === to;
@@ -72,6 +82,9 @@ export default function Layout() {
             <p className="text-sm font-medium leading-none truncate">{user?.name}</p>
             <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
           </div>
+          <Button variant="ghost" size="icon" onClick={toggleTheme}>
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
         </div>
         <Button variant="outline" className="w-full justify-start gap-2" onClick={logout}>
           <LogOut className="h-4 w-4" />
