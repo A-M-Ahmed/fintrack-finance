@@ -1,13 +1,14 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import {
     createWallet,
     getWallets,
     getWallet,
     updateWallet,
     deleteWallet
-} = require('../controllers/walletController');
-const { protect } = require('../middleware/authMiddleware');
+} from '../controllers/walletController.js';
+import { protect } from '../middleware/authMiddleware.js';
+
+const router = express.Router();
 
 router.route('/')
     .post(protect, createWallet)
@@ -18,4 +19,4 @@ router.route('/:id')
     .patch(protect, updateWallet)
     .delete(protect, deleteWallet);
 
-module.exports = router;
+export default router;

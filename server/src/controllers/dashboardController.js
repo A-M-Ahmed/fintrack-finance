@@ -1,10 +1,10 @@
-const Transaction = require('../models/Transaction');
-const Wallet = require('../models/Wallet');
+import Transaction from '../models/Transaction.js';
+import Wallet from '../models/Wallet.js';
 
 // @desc    Get dashboard summary
 // @route   GET /api/dashboard/summary
 // @access  Private
-exports.getDashboardSummary = async (req, res) => {
+export const getDashboardSummary = async (req, res) => {
     try {
         const { range } = req.query; // '7d', '30d', 'all'
         const userId = req.user.id;

@@ -1,10 +1,22 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const cookieParser = require('cookie-parser');
-const path = require('path');
+import 'dotenv/config';
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// ES Module __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Import routes
+import authRoutes from './src/routes/auth.routes.js';
+import walletRoutes from './src/routes/wallet.routes.js';
+import transactionRoutes from './src/routes/transaction.routes.js';
+import dashboardRoutes from './src/routes/dashboard.routes.js';
+import invoiceRoutes from './src/routes/invoice.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -30,26 +42,23 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Database Connection - Use MONGO_URI_PRO for production, fallback to MONGO_URI
+// Database Connection
 const mongoUri = process.env.MONGO_URI_PRO || process.env.MONGO_URI;
 mongoose.connect(mongoUri)
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.error('MongoDB Connection Error:', err));
 
 // API Routes
-app.use('/api/auth', require('./src/routes/auth.routes'));
-app.use('/api/wallets', require('./src/routes/wallet.routes'));
-app.use('/api/transactions', require('./src/routes/transaction.routes'));
-app.use('/api/dashboard', require('./src/routes/dashboard.routes'));
-app.use('/api/invoices', require('./src/routes/invoice.routes'));
+app.use('/api/auth', authRoutes);
+app.use('/api/wallets', walletRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/invoices', invoiceRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
-    // Serve static files from client/dist
     app.use(express.static(path.join(__dirname, '../client/dist')));
 
-    // Handle client-side routing - send index.html for any non-API routes
-    // Using regex pattern for Express 5 compatibility
     app.get(/.*/, (req, res) => {
         res.sendFile(path.join(__dirname, '../client/dist/index.html'));
     });

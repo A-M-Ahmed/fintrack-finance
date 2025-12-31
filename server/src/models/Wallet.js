@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const WalletSchema = new mongoose.Schema({
     user: {
@@ -45,4 +45,4 @@ WalletSchema.add({
 });
 // Actually I should have defined it in the schema above.
 
-module.exports = mongoose.model('Wallet', WalletSchema);
+export default mongoose.model('Wallet', WalletSchema);

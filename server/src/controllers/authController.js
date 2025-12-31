@@ -1,11 +1,11 @@
-const User = require('../models/User');
-const generateToken = require('../utils/generateToken');
-const bcrypt = require('bcrypt');
+import User from '../models/User.js';
+import generateToken from '../utils/generateToken.js';
+import bcrypt from 'bcrypt';
 
 // @desc    Register new user
 // @route   POST /api/auth/register
 // @access  Public
-exports.registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
@@ -49,7 +49,7 @@ exports.registerUser = async (req, res) => {
 // @desc    Authenticate a user
 // @route   POST /api/auth/login
 // @access  Public
-exports.loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -75,7 +75,7 @@ exports.loginUser = async (req, res) => {
 // @desc    Get user data
 // @route   GET /api/auth/me
 // @access  Private
-exports.getMe = async (req, res) => {
+export const getMe = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-passwordHash');
         res.status(200).json(user);
@@ -88,7 +88,7 @@ exports.getMe = async (req, res) => {
 // @desc    Change password
 // @route   POST /api/auth/change-password
 // @access  Private
-exports.changePassword = async (req, res) => {
+export const changePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
         const user = await User.findById(req.user.id);
@@ -126,7 +126,7 @@ exports.changePassword = async (req, res) => {
 // @desc    Update user details
 // @route   PUT /api/auth/updatedetails
 // @access  Private
-exports.updateDetails = async (req, res) => {
+export const updateDetails = async (req, res) => {
     try {
         const { name, email } = req.body;
         const user = await User.findById(req.user.id);

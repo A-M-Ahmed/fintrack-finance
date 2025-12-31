@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-exports.protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
     let token;
 
     if (

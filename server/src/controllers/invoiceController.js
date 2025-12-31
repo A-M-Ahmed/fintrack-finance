@@ -1,11 +1,11 @@
-const Invoice = require('../models/Invoice');
-const Transaction = require('../models/Transaction');
-const Wallet = require('../models/Wallet');
+import Invoice from '../models/Invoice.js';
+import Transaction from '../models/Transaction.js';
+import Wallet from '../models/Wallet.js';
 
 // @desc    Create invoice
 // @route   POST /api/invoices
 // @access  Private
-exports.createInvoice = async (req, res) => {
+export const createInvoice = async (req, res) => {
     try {
         const { invoiceId, clientName, items, status, issueDate, dueDate } = req.body;
 
@@ -33,7 +33,7 @@ exports.createInvoice = async (req, res) => {
 // @desc    Get Invoices
 // @route   GET /api/invoices
 // @access  Private
-exports.getInvoices = async (req, res) => {
+export const getInvoices = async (req, res) => {
     try {
         const invoices = await Invoice.find({ user: req.user.id }).sort('-createdAt');
         res.status(200).json(invoices);
@@ -46,7 +46,7 @@ exports.getInvoices = async (req, res) => {
 // @desc    Get single invoice
 // @route   GET /api/invoices/:id
 // @access  Private
-exports.getInvoice = async (req, res) => {
+export const getInvoice = async (req, res) => {
     try {
         const invoice = await Invoice.findById(req.params.id);
 
@@ -68,7 +68,7 @@ exports.getInvoice = async (req, res) => {
 // @desc    Update invoice status
 // @route   PUT /api/invoices/:id/status
 // @access  Private
-exports.updateInvoiceStatus = async (req, res) => {
+export const updateInvoiceStatus = async (req, res) => {
     try {
         const { status, walletId, type } = req.body;
         const invoice = await Invoice.findById(req.params.id);

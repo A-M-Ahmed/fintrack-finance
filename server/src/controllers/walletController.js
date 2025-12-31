@@ -1,9 +1,9 @@
-const Wallet = require('../models/Wallet');
+import Wallet from '../models/Wallet.js';
 
 // @desc    Create new wallet
 // @route   POST /api/wallets
 // @access  Private
-exports.createWallet = async (req, res) => {
+export const createWallet = async (req, res) => {
     try {
         const { name, type, initialBalance } = req.body;
 
@@ -29,7 +29,7 @@ exports.createWallet = async (req, res) => {
 // @desc    Get user wallets
 // @route   GET /api/wallets
 // @access  Private
-exports.getWallets = async (req, res) => {
+export const getWallets = async (req, res) => {
     try {
         const wallets = await Wallet.find({ user: req.user.id });
         res.status(200).json(wallets);
@@ -42,7 +42,7 @@ exports.getWallets = async (req, res) => {
 // @desc    Get single wallet
 // @route   GET /api/wallets/:id
 // @access  Private
-exports.getWallet = async (req, res) => {
+export const getWallet = async (req, res) => {
     try {
         const wallet = await Wallet.findById(req.params.id);
 
@@ -65,7 +65,7 @@ exports.getWallet = async (req, res) => {
 // @desc    Update wallet
 // @route   PATCH /api/wallets/:id
 // @access  Private
-exports.updateWallet = async (req, res) => {
+export const updateWallet = async (req, res) => {
     try {
         const wallet = await Wallet.findById(req.params.id);
 
@@ -92,7 +92,7 @@ exports.updateWallet = async (req, res) => {
 // @desc    Delete wallet
 // @route   DELETE /api/wallets/:id
 // @access  Private
-exports.deleteWallet = async (req, res) => {
+export const deleteWallet = async (req, res) => {
     try {
         const wallet = await Wallet.findById(req.params.id);
 

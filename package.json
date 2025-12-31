@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "FinTrack Personal Finance System",
   "main": "server/server.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "server": "nodemon server/server.js",
     "client": "npm --prefix ./client run dev",

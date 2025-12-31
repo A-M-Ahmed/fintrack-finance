@@ -1,10 +1,10 @@
-const Transaction = require('../models/Transaction');
-const Wallet = require('../models/Wallet');
+import Transaction from '../models/Transaction.js';
+import Wallet from '../models/Wallet.js';
 
 // @desc    Add transaction
 // @route   POST /api/transactions
 // @access  Private
-exports.addTransaction = async (req, res) => {
+export const addTransaction = async (req, res) => {
     try {
         const { walletId, type, category, title, amount, date, note } = req.body;
 
@@ -62,7 +62,7 @@ exports.addTransaction = async (req, res) => {
 // @desc    Get transactions
 // @route   GET /api/transactions
 // @access  Private
-exports.getTransactions = async (req, res) => {
+export const getTransactions = async (req, res) => {
     try {
         const { walletId, type, search, sort } = req.query;
 
@@ -101,7 +101,7 @@ exports.getTransactions = async (req, res) => {
 // @desc    Delete transaction
 // @route   DELETE /api/transactions/:id
 // @access  Private
-exports.deleteTransaction = async (req, res) => {
+export const deleteTransaction = async (req, res) => {
     try {
         const transaction = await Transaction.findById(req.params.id);
 
