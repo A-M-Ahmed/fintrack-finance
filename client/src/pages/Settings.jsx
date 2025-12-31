@@ -98,9 +98,7 @@ export default function Settings() {
   // Helper to resolve avatar URL
   const getAvatarUrl = () => {
       if (file) return URL.createObjectURL(file);
-      if (user?.avatar) {
-          return user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000${user.avatar}`;
-      }
+      if (user?.avatar) return user.avatar; // Cloudinary returns full URL
       return `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`;
   };
 

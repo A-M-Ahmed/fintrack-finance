@@ -136,8 +136,8 @@ exports.updateDetails = async (req, res) => {
             user.email = email || user.email;
 
             if (req.file) {
-                // If using local storage:
-                user.avatar = '/uploads/' + req.file.filename;
+                // Cloudinary returns full URL in req.file.path
+                user.avatar = req.file.path;
             }
 
             const updatedUser = await user.save();
