@@ -1,15 +1,17 @@
 {
-  "name": "fintrack-root",
+  "name": "fintrack",
   "version": "1.0.0",
   "description": "FinTrack Personal Finance System",
   "scripts": {
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "install-all": "npm install && cd server && npm install && cd .. && cd client && npm install && cd .."
+    "start": "cd server && npm start",
+    "build": "npm install --prefix ./client && npm run build --prefix ./client",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install"
   },
   "keywords": [],
-  "author": "",
+  "author": "Abdirahman Ahmed",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^9.1.2"

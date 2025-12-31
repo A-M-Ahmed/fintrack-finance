@@ -1,58 +1,47 @@
-# Render Deployment Guide
+# Render Deployment Guide (Single Server)
 
-## Backend (Web Service)
+Deploy both frontend and backend as **ONE Web Service** on Render.
 
-### Setup
-1. Create a new **Web Service** on Render
+## Setup on Render
+
+1. Create a new **Web Service**
 2. Connect your GitHub repository
 3. Configure:
-   - **Root Directory**: `server`
-   - **Build Command**: `npm install`
+   - **Root Directory**: *(leave empty - use repo root)*
+   - **Build Command**: `npm run build`
    - **Start Command**: `npm start`
 
-### Environment Variables
+## Environment Variables
+
 Add these in Render dashboard:
+
 ```
+NODE_ENV=production
 PORT=5000
-MONGO_URI=mongodb+srv://your-atlas-connection-string
+MONGO_URI_PRO=mongodb+srv://your-atlas-connection-string
 JWT_SECRET=your-super-secret-key
-JWT_EXPIRES_IN=7d
-CLIENT_URL=https://your-frontend.onrender.com
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
+CLOUDINARY_CLOUD_NAME=dlzqwvmmr
+CLOUDINARY_API_KEY=732742539369175
+CLOUDINARY_API_SECRET=qWmSNWrolMlePXRYKijO0gZ-id4
 ```
 
----
+## How It Works
 
-## Frontend (Static Site)
-
-### Setup
-1. Create a new **Static Site** on Render
-2. Connect your GitHub repository
-3. Configure:
-   - **Root Directory**: `client`
-   - **Build Command**: `npm install && npm run build`
-   - **Publish Directory**: `dist`
-
-### Environment Variables
-Add in Render dashboard:
-```
-VITE_API_URL=https://your-backend.onrender.com/api
-```
-
----
-
-## Important Notes
-
-1. **MongoDB**: Use MongoDB Atlas for production (free tier available)
-2. **CORS**: After deploying frontend, update `CLIENT_URL` in backend env vars
-3. **First Deploy**: Backend cold starts may take 30-60 seconds on free tier
-4. **Order**: Deploy backend first, get URL, then deploy frontend with that URL
+1. **Build**: `npm run build` installs client dependencies and builds the React app to `client/dist`
+2. **Start**: `npm start` runs the Express server which:
+   - Serves API routes at `/api/*`
+   - Serves React static files from `client/dist`
+   - Handles client-side routing (sends `index.html` for non-API routes)
 
 ## Quick Checklist
-- [ ] Create MongoDB Atlas cluster
-- [ ] Deploy backend → Get URL
-- [ ] Deploy frontend with backend URL
-- [ ] Update backend CLIENT_URL with frontend URL
-- [ ] Test all features
+
+- [ ] Create MongoDB Atlas cluster (free tier works)
+- [ ] Create Web Service on Render
+- [ ] Add environment variables
+- [ ] Deploy!
+
+## Notes
+
+- First deploy may take 2-3 minutes to build
+- Free tier has cold starts (~30 seconds after inactivity)
+- Your app will be at: `https://your-app-name.onrender.com`

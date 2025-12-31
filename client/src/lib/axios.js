@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+// In production (single server), use relative URL
+// In development, use VITE_API_URL or localhost
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+    baseURL: import.meta.env.VITE_API_URL || '/api',
     withCredentials: true, // Send cookies
 });
 
