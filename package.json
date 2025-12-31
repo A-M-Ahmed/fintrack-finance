@@ -9,7 +9,7 @@
     "client": "npm --prefix ./client run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "start": "node server/server.js",
-    "build": "npm install --prefix ./client --production=false && npm --prefix ./client run build"
+    "build": "npm install && npm install --prefix ./client --production=false && npm --prefix ./client run build"
   },
   "keywords": [],
   "author": "Abdirahman Ahmed",
