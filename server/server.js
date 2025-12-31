@@ -1,4 +1,5 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -21,6 +22,7 @@ import invoiceRoutes from './routes/invoice.routes.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+dotenv.config()
 // Middleware
 app.use(helmet({
     contentSecurityPolicy: false,
@@ -30,8 +32,7 @@ app.use(cors({
     origin: [
         'http://localhost:5173',
         'http://localhost:5174',
-        'http://127.0.0.1:5173',
-        process.env.CLIENT_URL
+        'http://127.0.0.1:5173'
     ].filter(Boolean),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -43,10 +44,7 @@ app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database Connection
-const mongoUri = process.env.MONGO_URI_PRO || process.env.MONGO_URI;
-mongoose.connect(mongoUri)
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.error('MongoDB Connection Error:', err));
+
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -67,6 +65,7 @@ if (process.env.NODE_ENV === 'production') {
         res.send('FinTrack API is running...');
     });
 }
+
 
 // Start Server
 app.listen(PORT, () => {
