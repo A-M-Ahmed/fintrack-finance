@@ -11,6 +11,51 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Search, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Transactions Skeleton
+const TransactionsSkeleton = () => (
+  <div className="flex flex-col gap-6">
+    <div className="flex justify-between items-center">
+      <Skeleton className="h-9 w-40" />
+      <Skeleton className="h-10 w-40" />
+    </div>
+    <Card>
+      <CardContent className="pt-6">
+        <div className="flex gap-4">
+          <Skeleton className="h-10 flex-1" />
+          <Skeleton className="h-10 w-[180px]" />
+        </div>
+      </CardContent>
+    </Card>
+    <Card>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {['Date', 'Title', 'Category', 'Wallet', 'Type', 'Amount', ''].map((h, i) => (
+                <TableHead key={i}><Skeleton className="h-4 w-16" /></TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <TableRow key={i}>
+                <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-8 w-8" /></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  </div>
+);
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([]);
@@ -79,7 +124,7 @@ export default function Transactions() {
     return matchesSearch && matchesType;
   });
 
-  if (loading) return <div>Loading transactions...</div>;
+  if (loading) return <TransactionsSkeleton />;
 
   return (
     <div className="flex flex-col gap-6">

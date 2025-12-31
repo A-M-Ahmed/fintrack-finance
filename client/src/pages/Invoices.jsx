@@ -11,6 +11,43 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, FileText, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Invoices Skeleton
+const InvoicesSkeleton = () => (
+  <div className="flex flex-col gap-6">
+    <div className="flex justify-between items-center">
+      <Skeleton className="h-9 w-32" />
+      <Skeleton className="h-10 w-36" />
+    </div>
+    <Card>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {['Invoice ID', 'Client', 'Issue Date', 'Due Date', 'Total', 'Status', 'Actions'].map((h, i) => (
+                <TableHead key={i}><Skeleton className="h-4 w-16" /></TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {[1, 2, 3, 4].map((i) => (
+              <TableRow key={i}>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
+                <TableCell><Skeleton className="h-8 w-24" /></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  </div>
+);
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
@@ -109,7 +146,7 @@ export default function Invoices() {
       return `INV-${Date.now().toString().slice(-6)}`;
   };
 
-  if (loading) return <div>Loading invoices...</div>;
+  if (loading) return <InvoicesSkeleton />;
 
   return (
     <div className="flex flex-col gap-6">
