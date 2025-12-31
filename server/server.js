@@ -8,9 +8,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// ES Module __dirname equivalent
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
 
 // Import routes
 import authRoutes from './routes/auth.routes.js';
@@ -54,19 +52,21 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/invoices', invoiceRoutes);
 
 // Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') { 
+
+    const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
     app.use(express.static(path.join(__dirname, '../client/dist')));
 
     app.get(/.*/, (req, res) => {
-        res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-    });
-} else {
-    app.get('/', (req, res) => {
-        res.send('FinTrack API is running...');
+        res.sendFile(path.join(__dirname, '..','client','dist','index.html'));
     });
 }
 
-
+const mongoUri = process.env.NODE_ENV == 'production' ? process.env.MONGO_URI_PRO : process.env.MONGO_URI;
+mongoose.connect(mongoUri)
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.error('MongoDB Connection Error:', err));
 // Start Server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
