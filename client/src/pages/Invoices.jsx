@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import api from "@/lib/axios";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { PlusCircle, FileText, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useInvoices, useInvoiceMutations } from "@/hooks/useInvoices";
+import { useWallets } from "@/hooks/useWallets";
 
 // Invoices Skeleton
 const InvoicesSkeleton = () => (
@@ -50,9 +51,10 @@ const InvoicesSkeleton = () => (
 );
 
 export default function Invoices() {
-  const [invoices, setInvoices] = useState([]);
-  const [wallets, setWallets] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: invoices = [], isLoading } = useInvoices();
+  const { data: wallets = [] } = useWallets();
+  const { createInvoice, updateStatus } = useInvoiceMutations();
+
   const [isOpen, setIsOpen] = useState(false);
   
   // Payment Dialog State
@@ -67,57 +69,38 @@ export default function Invoices() {
     dueDate: ''
   });
 
-  const fetchData = async () => {
-    const startTime = Date.now();
-    try {
-      const [invRes, walletRes] = await Promise.all([
-         api.get('/invoices'),
-         api.get('/wallets')
-      ]);
-      setInvoices(invRes.data);
-      setWallets(walletRes.data);
-      if (walletRes.data.length > 0) {
-          setPaymentData(prev => ({ ...prev, walletId: walletRes.data[0]._id }));
-      }
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 1000) await new Promise(r => setTimeout(r, 1000 - elapsed));
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data", error);
-      setLoading(false);
-    }
-  };
-
+  // Set default wallet
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleCreate = async () => {
-    try {
-      await api.post('/invoices', formData);
-      toast.success("Invoice created!");
-      setIsOpen(false);
-      setFormData({ invoiceId: '', clientName: '', items: [{ name: '', qty: 1, price: 0 }], dueDate: '' });
-      fetchData();
-    } catch (error) {
-      toast.error("Failed to create invoice");
+    if (wallets.length > 0 && !paymentData.walletId) {
+        setPaymentData(prev => ({ ...prev, walletId: wallets[0]._id }));
     }
+  }, [wallets, paymentData.walletId]);
+
+  const handleCreate = () => {
+    if (!formData.clientName || !formData.dueDate) return toast.error("Please fill required fields");
+
+    createInvoice.mutate(formData, {
+        onSuccess: () => {
+            setIsOpen(false);
+            setFormData({ invoiceId: '', clientName: '', items: [{ name: '', qty: 1, price: 0 }], dueDate: '' });
+        }
+    });
   };
 
-  const handleMarkPaid = async () => {
+  const handleMarkPaid = () => {
       if (!selectedInvoice) return;
-      try {
-          await api.put(`/invoices/${selectedInvoice._id}/status`, {
-              status: 'paid',
-              walletId: paymentData.walletId,
-              type: paymentData.type
-          });
-          toast.success("Invoice marked as paid & Transaction recorded!");
-          setPaymentDialog(false);
-          fetchData();
-      } catch (error) {
-          toast.error(error.response?.data?.message || "Failed to update invoice");
-      }
+      if (!paymentData.walletId) return toast.error("Select a wallet");
+
+      updateStatus.mutate({
+          id: selectedInvoice._id,
+          status: 'paid',
+          walletId: paymentData.walletId,
+          type: paymentData.type
+      }, {
+          onSuccess: () => {
+              setPaymentDialog(false);
+          }
+      });
   };
 
   const openPaymentDialog = (invoice) => {
@@ -145,11 +128,10 @@ export default function Invoices() {
   };
 
   const generateInvoiceId = () => {
-      // Generate a unique ID, e.g., INV-TIMESTAMP (last 6 digits)
       return `INV-${Date.now().toString().slice(-6)}`;
   };
 
-  if (loading) return <InvoicesSkeleton />;
+  if (isLoading) return <InvoicesSkeleton />;
 
   return (
     <div className="flex flex-col gap-6">
@@ -201,7 +183,9 @@ export default function Invoices() {
             </div>
             <DialogFooter>
               <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-              <Button onClick={handleCreate}>Create Invoice</Button>
+              <Button onClick={handleCreate} disabled={createInvoice.isPending}>
+                {createInvoice.isPending ? 'Creating...' : 'Create Invoice'}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -290,7 +274,9 @@ export default function Invoices() {
               </div>
               <DialogFooter>
                   <Button variant="outline" onClick={() => setPaymentDialog(false)}>Cancel</Button>
-                  <Button onClick={handleMarkPaid}>Confirm Payment</Button>
+                  <Button onClick={handleMarkPaid} disabled={updateStatus.isPending}>
+                    {updateStatus.isPending ? 'Confirming...' : 'Confirm Payment'}
+                  </Button>
               </DialogFooter>
           </DialogContent>
       </Dialog>

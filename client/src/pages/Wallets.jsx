@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import api from "@/lib/axios";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Wallet, PlusCircle, Landmark, Smartphone, Banknote } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useWallets, useWalletMutations } from "@/hooks/useWallets";
 
 // Wallets Skeleton
 const WalletsSkeleton = () => (
@@ -35,40 +35,26 @@ const WalletsSkeleton = () => (
 );
 
 export default function Wallets() {
-  const [wallets, setWallets] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: wallets = [], isLoading } = useWallets();
+  const { createWallet } = useWalletMutations();
+
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', type: 'bank', initialBalance: '' });
 
-  const fetchWallets = async () => {
-    const startTime = Date.now();
-    try {
-      const res = await api.get('/wallets');
-      setWallets(res.data);
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 1000) await new Promise(r => setTimeout(r, 1000 - elapsed));
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching wallets", error);
-      setLoading(false);
-    }
-  };
+  const handleCreate = () => {
+    if (!formData.name) return toast.error("Name is required");
 
-  useEffect(() => {
-    fetchWallets();
-  }, []);
+    const payload = {
+        ...formData,
+        initialBalance: Number(formData.initialBalance || 0)
+    };
 
-  const handleCreate = async () => {
-    try {
-      if (!formData.initialBalance) formData.initialBalance = "0";
-      await api.post('/wallets', { ...formData, initialBalance: Number(formData.initialBalance) });
-      toast.success("Wallet created!");
-      setIsOpen(false);
-      setFormData({ name: '', type: 'bank', initialBalance: '' });
-      fetchWallets();
-    } catch (error) {
-      toast.error("Failed to create wallet");
-    }
+    createWallet.mutate(payload, {
+        onSuccess: () => {
+            setIsOpen(false);
+            setFormData({ name: '', type: 'bank', initialBalance: '' });
+        }
+    });
   };
 
   const getWalletIcon = (type) => {
@@ -80,7 +66,7 @@ export default function Wallets() {
     }
   };
 
-  if (loading) return <WalletsSkeleton />;
+  if (isLoading) return <WalletsSkeleton />;
 
   return (
     <div className="flex flex-col gap-6">
@@ -140,7 +126,9 @@ export default function Wallets() {
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button onClick={handleCreate}>Create Wallet</Button>
+              <Button onClick={handleCreate} disabled={createWallet.isPending}>
+                {createWallet.isPending ? 'Creating...' : 'Create Wallet'}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

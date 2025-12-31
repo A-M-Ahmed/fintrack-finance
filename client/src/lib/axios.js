@@ -19,9 +19,20 @@ const api = axios.create({
 // I'll add the interceptor to be safe.
 
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    // Current auth store uses 'auth-storage' key in localStorage
+    // It's a JSON string: { state: { token: "...", user: ... }, version: 0 }
+    const storageData = localStorage.getItem('auth-storage');
+
+    if (storageData) {
+        try {
+            const parsed = JSON.parse(storageData);
+            const token = parsed?.state?.token;
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        } catch (e) {
+            console.error("Error parsing auth token", e);
+        }
     }
     return config;
 });

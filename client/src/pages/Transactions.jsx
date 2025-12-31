@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import api from "@/lib/axios";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Search, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTransactions, useTransactionMutations } from "@/hooks/useTransactions";
+import { useWallets } from "@/hooks/useWallets";
 
 // Transactions Skeleton
 const TransactionsSkeleton = () => (
@@ -58,12 +59,18 @@ const TransactionsSkeleton = () => (
 );
 
 export default function Transactions() {
-  const [transactions, setTransactions] = useState([]);
-  const [wallets, setWallets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
+  
+  // Use TanStack Query hooks
+  const { data: wallets = [] } = useWallets();
+  const { data: transactions = [], isLoading } = useTransactions({ 
+      search: searchQuery, 
+      type: filterType 
+  });
+  const { addTransaction, deleteTransaction } = useTransactionMutations();
+
+  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     walletId: '',
     type: 'expense',
@@ -73,61 +80,25 @@ export default function Transactions() {
     note: ''
   });
 
-  const fetchData = async () => {
-    const startTime = Date.now();
-    try {
-      const [transRes, walletRes] = await Promise.all([
-        api.get('/transactions'),
-        api.get('/wallets')
-      ]);
-      setTransactions(transRes.data);
-      setWallets(walletRes.data);
-      if (walletRes.data.length > 0 && !formData.walletId) {
-        setFormData(prev => ({ ...prev, walletId: walletRes.data[0]._id }));
-      }
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 1000) await new Promise(r => setTimeout(r, 1000 - elapsed));
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data", error);
-      setLoading(false);
-    }
+  const handleCreate = () => {
+    if (!formData.walletId) return toast.error("Please select a wallet");
+    if (!formData.title || !formData.amount) return toast.error("Title and Amount are required");
+
+    const payload = { ...formData, amount: Number(formData.amount) };
+
+    addTransaction.mutate(payload, {
+        onSuccess: () => {
+            setIsOpen(false);
+            setFormData({ walletId: wallets[0]?._id || '', type: 'expense', category: '', title: '', amount: '', note: '' });
+        }
+    });
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleCreate = async () => {
-    try {
-      await api.post('/transactions', { ...formData, amount: Number(formData.amount) });
-      toast.success("Transaction added!");
-      setIsOpen(false);
-      setFormData({ walletId: wallets[0]?._id || '', type: 'expense', category: '', title: '', amount: '', note: '' });
-      fetchData();
-    } catch (error) {
-      toast.error("Failed to add transaction");
-    }
+  const handleDelete = (id) => {
+    deleteTransaction.mutate(id);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await api.delete(`/transactions/${id}`);
-      toast.success("Transaction deleted!");
-      fetchData();
-    } catch (error) {
-      toast.error("Failed to delete");
-    }
-  };
-
-  const filteredTransactions = transactions.filter(t => {
-    const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          t.category?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === 'all' || t.type === filterType;
-    return matchesSearch && matchesType;
-  });
-
-  if (loading) return <TransactionsSkeleton />;
+  if (isLoading) return <TransactionsSkeleton />;
 
   return (
     <div className="flex flex-col gap-6">
@@ -189,7 +160,9 @@ export default function Transactions() {
             </div>
             <DialogFooter>
               <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-              <Button onClick={handleCreate}>Add Transaction</Button>
+              <Button onClick={handleCreate} disabled={addTransaction.isPending}>
+                {addTransaction.isPending ? 'Adding...' : 'Add Transaction'}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -231,7 +204,7 @@ export default function Transactions() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredTransactions.length > 0 ? filteredTransactions.map((t) => (
+              {transactions.length > 0 ? transactions.map((t) => (
                 <TableRow key={t._id}>
                   <TableCell>{format(new Date(t.date), 'MMM dd, yyyy')}</TableCell>
                   <TableCell className="font-medium">{t.title}</TableCell>
@@ -246,7 +219,7 @@ export default function Transactions() {
                     {t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(t._id)}>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(t._id)} disabled={deleteTransaction.isPending}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </TableCell>

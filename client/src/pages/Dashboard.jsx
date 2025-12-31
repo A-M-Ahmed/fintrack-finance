@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import api from "@/lib/axios";
+import { useDashboard } from "@/hooks/useDashboard";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DollarSign, Wallet as WalletIcon, TrendingUp, TrendingDown, MoreHorizontal } from "lucide-react";
 import { format } from "date-fns";
@@ -59,28 +58,9 @@ const DashboardSkeleton = () => (
 );
 
 export default function Dashboard() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = useDashboard();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const startTime = Date.now();
-      try {
-        const res = await api.get('/dashboard/summary?range=30d');
-        setData(res.data);
-        // Ensure minimum 1 second loading for smooth skeleton
-        const elapsed = Date.now() - startTime;
-        if (elapsed < 1000) await new Promise(r => setTimeout(r, 1000 - elapsed));
-        setLoading(false);
-      } catch (error) {
-        console.error("Dashboard fetch error", error);
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  if (loading) return <DashboardSkeleton />;
+  if (isLoading) return <DashboardSkeleton />;
 
   return (
     <div className="flex flex-col gap-8">
