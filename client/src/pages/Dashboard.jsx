@@ -1,4 +1,6 @@
 import { useDashboard } from "@/hooks/useDashboard";
+import { useWallets } from "@/hooks/useWallets";
+import { useTransactions } from "@/hooks/useTransactions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DollarSign, Wallet as WalletIcon, TrendingUp, TrendingDown, MoreHorizontal } from "lucide-react";
 import { format } from "date-fns";
@@ -7,6 +9,7 @@ import CreditCard from "@/components/CreditCard";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
 
 // Dashboard Skeleton Component
 const DashboardSkeleton = () => (
