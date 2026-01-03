@@ -55,9 +55,7 @@ export default function Settings() {
           formData.append('avatar', file);
       }
 
-      const res = await api.put('/auth/updatedetails', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const res = await api.put('/auth/updatedetails', formData);
       
       updateUser(res.data);
       toast.success("Profile updated successfully");
