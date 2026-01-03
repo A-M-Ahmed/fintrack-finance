@@ -7,7 +7,8 @@ React Frontend for FinTrack Personal Finance System.
 - React (Vite)
 - Tailwind CSS v4
 - Shadcn/UI
-- Zustand (State Management)
+- TanStack Query (Server State)
+- Zustand (Auth State)
 - Zod (Validation)
 - Axios (API)
 - React Router

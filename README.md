@@ -48,7 +48,8 @@ A modern, full-stack personal finance management application built with the MERN
 - **Tailwind CSS** for styling
 - **Shadcn/UI** component library
 - **Recharts** for data visualization
-- **Zustand** for state management
+- **TanStack Query** for server state management
+- **Zustand** for client state (Auth)
 - **React Router** for navigation
 - **Sonner** for toast notifications
 
@@ -126,31 +127,18 @@ FinTrack/
 └── package.json            # Root package with scripts
 ```
 
-## 🔗 API Endpoints
+## 🔗 API Documentation
 
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user
-- `PUT /api/auth/updatedetails` - Update profile (with avatar upload)
-- `POST /api/auth/change-password` - Change password
+The application provides a comprehensive, secure RESTful API for managing personal finances.
 
-### Wallets
-- `GET /api/wallets` - Get all wallets
-- `POST /api/wallets` - Create wallet
+### Key Modules
+- **Authentication**: JWT-based auth with secure cookie handling and profile management.
+- **Wallets**: Multi-currency wallet management with real-time balance tracking.
+- **Transactions**: Advanced transaction recording with search, filtering, and categorization.
+- **Invoices**: Invoice generation system with status tracking and automatic payment integration.
+- **Dashboard**: Aggregated statistical data for financial visualization.
 
-### Transactions
-- `GET /api/transactions` - Get all transactions
-- `POST /api/transactions` - Create transaction
-- `DELETE /api/transactions/:id` - Delete transaction
-
-### Invoices
-- `GET /api/invoices` - Get all invoices
-- `POST /api/invoices` - Create invoice
-- `PUT /api/invoices/:id/status` - Update invoice status
-
-### Dashboard
-- `GET /api/dashboard/summary` - Get financial summary
+*(All data routes are protected and require a valid Bearer token)*
 
 ## 🎨 UI Features
 
