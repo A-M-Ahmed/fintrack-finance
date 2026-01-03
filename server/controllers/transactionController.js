@@ -8,11 +8,6 @@ export const addTransaction = async (req, res) => {
     try {
         const { walletId, type, category, title, amount, date, note } = req.body;
 
-        // Validate request
-        if (!walletId || !type || !amount || !title) {
-            return res.status(400).json({ message: 'Please provide all details' });
-        }
-
         const wallet = await Wallet.findById(walletId);
 
         if (!wallet) {

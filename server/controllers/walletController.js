@@ -7,10 +7,6 @@ export const createWallet = async (req, res) => {
     try {
         const { name, type, initialBalance } = req.body;
 
-        if (!name || !type) {
-            return res.status(400).json({ message: 'Please add name and type' });
-        }
-
         const wallet = await Wallet.create({
             user: req.user.id,
             name,

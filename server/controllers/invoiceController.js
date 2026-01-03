@@ -77,8 +77,6 @@ export const updateInvoiceStatus = async (req, res) => {
         if (invoice.user.toString() !== req.user.id) return res.status(401).json({ message: 'Not authorized' });
 
         if (status === 'paid' && invoice.status !== 'paid') {
-            if (!walletId) return res.status(400).json({ message: 'Wallet is required when marking as paid' });
-
             const wallet = await Wallet.findById(walletId);
             if (!wallet) return res.status(404).json({ message: 'Wallet not found' });
             if (wallet.user.toString() !== req.user.id) return res.status(401).json({ message: 'Not authorized' });
