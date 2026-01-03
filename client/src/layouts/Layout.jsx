@@ -28,6 +28,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import LockScreen from "@/components/LockScreen";
 
 export default function Layout() {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
@@ -40,6 +41,11 @@ export default function Layout() {
 
   if (isLoading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
   if (!isAuthenticated) return <Navigate to="/signin" />;
+  
+  // Show Pin Lock Screen if locked
+  if (user?.isLocked || useAuthStore.getState().isLocked) {
+      return <LockScreen />;
+  }
 
 
   const NavLink = ({ to, icon: Icon, children }) => {

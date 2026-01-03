@@ -30,6 +30,27 @@ export default function Settings() {
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPass, setLoadingPass] = useState(false);
 
+  const [pin, setPin] = useState("");
+  const [loadingPin, setLoadingPin] = useState(false);
+
+  const handleSetPin = async () => {
+    if (pin.length !== 4) {
+        toast.error("PIN must be 4 digits");
+        return;
+    }
+    setLoadingPin(true);
+    try {
+        await api.post('/auth/set-pin', { pin });
+        useAuthStore.getState().setPinSuccess();
+        toast.success("PIN set successfully");
+        setPin("");
+    } catch (err) {
+        toast.error("Failed to set PIN");
+    } finally {
+        setLoadingPin(false);
+    }
+  };
+
   const handleFileChange = (e) => {
       const selected = e.target.files[0];
       if (selected) {
@@ -165,6 +186,48 @@ export default function Settings() {
                Save Changes
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+
+      {/* App Lock Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>App Lock 🔒</CardTitle>
+          <CardDescription>Secure your app with a 4-digit PIN</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                    <p className="font-medium">PIN Protection</p>
+                    <p className="text-sm text-muted-foreground">
+                        {user?.hasPin ? "PIN is currently enabled" : "No PIN set"}
+                    </p>
+                </div>
+                 {user?.hasPin && (
+                    <Button variant="outline" onClick={() => useAuthStore.getState().lock()}>Lock App Now</Button>
+                 )}
+            </div>
+            
+            <Separator />
+
+            <div className="max-w-xs space-y-2">
+                <Label>Set New PIN (4 digits)</Label>
+                <div className="flex gap-2">
+                    <Input 
+                        value={pin}
+                        onChange={(e) => {
+                            if (/^\d*$/.test(e.target.value) && e.target.value.length <= 4) setPin(e.target.value);
+                        }}
+                        type="password"
+                        placeholder="----"
+                        className="tracking-widest font-mono text-center"
+                    />
+                    <Button onClick={handleSetPin} disabled={loadingPin || pin.length !== 4}>
+                        {loadingPin ? <Loader2 className="h-4 w-4 animate-spin" /> : "Set"}
+                    </Button>
+                </div>
+            </div>
         </CardContent>
       </Card>
 

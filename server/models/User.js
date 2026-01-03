@@ -17,6 +17,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    pinHash: {
+        type: String,
+        default: null
+    },
     currency: {
         type: String,
         default: 'USD'

@@ -57,6 +57,8 @@ export const loginUser = async (req, res) => {
                 _id: user.id,
                 name: user.name,
                 email: user.email,
+                avatar: user.avatar,
+                hasPin: !!user.pinHash,
                 token: generateToken(user._id),
             });
         } else {
@@ -74,7 +76,9 @@ export const loginUser = async (req, res) => {
 export const getMe = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-passwordHash');
-        res.status(200).json(user);
+        // Return hasPin field to frontend
+        const userData = { ...user._doc, hasPin: !!user.pinHash };
+        res.status(200).json(userData);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });
@@ -90,7 +94,6 @@ export const changePassword = async (req, res) => {
         const user = await User.findById(req.user.id);
 
         // Security Check: 3 Days Cooldown
-        // Only check if lastPasswordChange is set (not null)
         if (user.lastPasswordChange) {
             const threeDays = 3 * 24 * 60 * 60 * 1000;
             const timeDiff = Date.now() - new Date(user.lastPasswordChange).getTime();
@@ -132,7 +135,6 @@ export const updateDetails = async (req, res) => {
             user.email = email || user.email;
 
             if (req.file) {
-                // Cloudinary returns full URL in req.file.path
                 user.avatar = req.file.path;
             }
 
@@ -143,10 +145,59 @@ export const updateDetails = async (req, res) => {
                 name: updatedUser.name,
                 email: updatedUser.email,
                 avatar: updatedUser.avatar,
+                hasPin: !!updatedUser.pinHash,
                 token: generateToken(updatedUser._id),
             });
         } else {
             res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Set or Update PIN
+// @route   POST /api/auth/set-pin
+// @access  Private
+export const setPin = async (req, res) => {
+    try {
+        const { pin } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        user.pinHash = await bcrypt.hash(pin, salt);
+        await user.save();
+
+        res.status(200).json({ message: 'PIN set successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Verify PIN
+// @route   POST /api/auth/verify-pin
+// @access  Private
+export const verifyPin = async (req, res) => {
+    try {
+        const { pin } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user || !user.pinHash) {
+            return res.status(400).json({ message: 'PIN not found or not set' });
+        }
+
+        const isMatch = await bcrypt.compare(pin, user.pinHash);
+
+        if (isMatch) {
+            res.status(200).json({ message: 'PIN verified' });
+        } else {
+            res.status(401).json({ message: 'Invalid PIN' });
         }
     } catch (error) {
         console.error(error);
