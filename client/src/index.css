@@ -87,3 +87,32 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+@layer components {
+  /* Page Layouts */
+  .page-container {
+    @apply flex flex-col gap-6;
+  }
+  
+  .page-header {
+    @apply flex flex-col gap-4 md:flex-row md:justify-between md:items-center;
+  }
+  
+  .page-title {
+    @apply text-3xl font-bold tracking-tight;
+  }
+  
+  /* Auth Layouts */
+  .auth-wrapper {
+    @apply flex items-center justify-center min-h-screen bg-muted/40;
+  }
+  
+  /* Forms */
+  .form-group {
+    @apply space-y-2;
+  }
+  
+  .dialog-grid {
+    @apply grid gap-6 py-4;
+  }
+}

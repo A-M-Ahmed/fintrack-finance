@@ -69,9 +69,9 @@ export default function Wallets() {
   if (isLoading) return <WalletsSkeleton />;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">My Wallets</h2>
+    <div className="page-container">
+      <div className="page-header">
+        <h2 className="page-title">My Wallets</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2">
@@ -82,8 +82,8 @@ export default function Wallets() {
             <DialogHeader>
               <DialogTitle>Create New Wallet</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-6 py-4">
-              <div className="space-y-2">
+            <div className="dialog-grid">
+              <div className="form-group">
                 <Label htmlFor="name">Wallet Name</Label>
                 <Input 
                   id="name" 
@@ -92,7 +92,7 @@ export default function Wallets() {
                   placeholder="e.g., Universal Bank"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="form-group">
                 <Label>Wallet Type</Label>
                 <Select 
                   value={formData.type} 
@@ -108,7 +108,7 @@ export default function Wallets() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
+              <div className="form-group">
                 <Label htmlFor="balance">Initial Balance</Label>
                 <Input 
                   id="balance" 

@@ -102,7 +102,7 @@ export default function Settings() {
 
   return (
     <div className="flex flex-col gap-8 max-w-2xl px-1">
-      <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
+      <h2 className="page-title">Settings</h2>
 
       {/* Profile Section */}
       <Card>
@@ -143,7 +143,7 @@ export default function Settings() {
           <Separator />
           
           <div className="grid gap-6">
-            <div className="space-y-2">
+            <div className="form-group">
               <Label htmlFor="name">Full Name</Label>
               <Input 
                 id="name" 
@@ -151,7 +151,7 @@ export default function Settings() {
                 onChange={(e) => setProfileData({...profileData, name: e.target.value})} 
               />
             </div>
-            <div className="space-y-2">
+            <div className="form-group">
               <Label htmlFor="email">Email</Label>
               <Input 
                 id="email" 
@@ -175,7 +175,7 @@ export default function Settings() {
           <CardDescription>Change your password (3 days cooldown)</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
+          <div className="form-group">
             <Label htmlFor="current-password">Current Password</Label>
             <Input 
               id="current-password" 
@@ -184,7 +184,7 @@ export default function Settings() {
               onChange={(e) => setPassData({...passData, currentPassword: e.target.value})}
             />
           </div>
-          <div className="space-y-2">
+          <div className="form-group">
             <Label htmlFor="new-password">New Password</Label>
             <Input 
               id="new-password" 
@@ -193,7 +193,7 @@ export default function Settings() {
               onChange={(e) => setPassData({...passData, newPassword: e.target.value})}
             />
           </div>
-          <div className="space-y-2">
+          <div className="form-group">
             <Label htmlFor="confirm-password">Confirm New Password</Label>
             <Input 
               id="confirm-password" 

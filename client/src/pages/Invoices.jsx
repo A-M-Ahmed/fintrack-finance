@@ -134,9 +134,9 @@ export default function Invoices() {
   if (isLoading) return <InvoicesSkeleton />;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">Invoices</h2>
+    <div className="page-container">
+      <div className="page-header">
+        <h2 className="page-title">Invoices</h2>
         <Dialog open={isOpen} onOpenChange={(val) => {
             setIsOpen(val);
             if (val) {
@@ -152,9 +152,9 @@ export default function Invoices() {
             <DialogHeader>
               <DialogTitle>Create New Invoice</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-6 py-4 max-h-[60vh] overflow-y-auto form-grid">
+            <div className="dialog-grid max-h-[60vh] overflow-y-auto form-grid">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div className="form-group">
                   <Label>Invoice ID</Label>
                   <Input value={formData.invoiceId} disabled className="bg-muted font-mono" />
                 </div>

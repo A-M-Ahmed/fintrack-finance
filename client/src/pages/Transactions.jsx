@@ -101,9 +101,9 @@ export default function Transactions() {
   if (isLoading) return <TransactionsSkeleton />;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
-        <h2 className="text-3xl font-bold tracking-tight">Transactions</h2>
+    <div className="page-container">
+      <div className="page-header">
+        <h2 className="page-title">Transactions</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2">
@@ -114,8 +114,8 @@ export default function Transactions() {
             <DialogHeader>
               <DialogTitle>Add New Transaction</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-6 py-4">
-              <div className="space-y-2">
+            <div className="dialog-grid">
+              <div className="form-group">
                 <Label>Wallet</Label>
                 <Select value={formData.walletId} onValueChange={(v) => setFormData({ ...formData, walletId: v })}>
                   <SelectTrigger><SelectValue placeholder="Select wallet" /></SelectTrigger>
@@ -124,7 +124,7 @@ export default function Transactions() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
+              <div className="form-group">
                 <Label>Type</Label>
                 <Select value={formData.type} onValueChange={(v) => setFormData({ ...formData, type: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
@@ -134,15 +134,15 @@ export default function Transactions() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
+              <div className="form-group">
                 <Label>Category</Label>
                 <Input value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} placeholder="e.g., Food, Rent" />
               </div>
-              <div className="space-y-2">
+              <div className="form-group">
                 <Label>Title</Label>
                 <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="e.g., Netflix Subscription" />
               </div>
-              <div className="space-y-2">
+              <div className="form-group">
                 <Label>Amount</Label>
                 <Input 
                    type="text" 
@@ -153,7 +153,7 @@ export default function Transactions() {
                    }} 
                 />
               </div>
-              <div className="space-y-2">
+              <div className="form-group">
                 <Label>Note (Optional)</Label>
                 <Input value={formData.note} onChange={(e) => setFormData({ ...formData, note: e.target.value })} />
               </div>

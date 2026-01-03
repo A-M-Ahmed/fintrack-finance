@@ -39,7 +39,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted/40">
+    <div className="auth-wrapper">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
@@ -52,7 +52,7 @@ export default function SignIn() {
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem className="space-y-3 flex flex-col">
+                  <FormItem className="form-group flex flex-col">
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input placeholder="m@example.com" {...field} />
@@ -65,7 +65,7 @@ export default function SignIn() {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem className="space-y-3 flex flex-col"> 
+                  <FormItem className="form-group flex flex-col"> 
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />

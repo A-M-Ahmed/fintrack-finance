@@ -42,7 +42,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted/40">
+    <div className="auth-wrapper">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>

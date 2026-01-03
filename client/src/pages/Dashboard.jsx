@@ -63,9 +63,9 @@ export default function Dashboard() {
   if (isLoading) return <DashboardSkeleton />;
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+    <div className="page-container gap-8">
+      <div className="page-header">
+        <h2 className="page-title">Dashboard</h2>
         <div className="hidden md:flex gap-4">
              {/* Header actions can go here */}
         </div>
