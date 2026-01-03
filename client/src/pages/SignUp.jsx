@@ -35,7 +35,9 @@ export default function SignUp() {
       toast.success("Account created successfully!");
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error.toString());
+      console.error(error);
+      const message = error.response?.data?.message || "Registration failed. Please try again.";
+      toast.error(message);
     }
   };
 

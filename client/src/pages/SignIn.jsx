@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { toast } from "sonner";
-import useAuthStore from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import useAuthStore from "@/store/useAuthStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import * as z from "zod";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -33,7 +32,9 @@ export default function SignIn() {
       toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error.toString());
+      console.error(error);
+      const message = error.response?.data?.message || "Invalid credentials. Please try again.";
+      toast.error(message);
     }
   };
 
@@ -51,7 +52,7 @@ export default function SignIn() {
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="space-y-3 flex flex-col">
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input placeholder="m@example.com" {...field} />
@@ -64,7 +65,7 @@ export default function SignIn() {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="space-y-3 flex flex-col"> 
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />

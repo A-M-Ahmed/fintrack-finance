@@ -16,7 +16,7 @@ export const registerUser = async (req, res) => {
         // Check if user exists
         const userExists = await User.findOne({ email });
         if (userExists) {
-            return res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({ message: 'User already exists with this email. Please sign in instead.' });
         }
 
         // Hash password
@@ -64,7 +64,7 @@ export const loginUser = async (req, res) => {
                 token: generateToken(user._id),
             });
         } else {
-            res.status(400).json({ message: 'Invalid email or password' });
+            res.status(400).json({ message: 'Invalid email or password. Please try again.' });
         }
     } catch (error) {
         console.error(error);
