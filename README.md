@@ -2,7 +2,7 @@
 
 A modern, full-stack personal finance management application built with the MERN stack (MongoDB, Express.js, React, Node.js).
 
-![FinTrack Dashboard](https://via.placeholder.com/800x400?text=FinTrack+Dashboard)
+![FinTrack Dashboard](screenshots/dashboard.png)
 
 ## ✨ Features
 
